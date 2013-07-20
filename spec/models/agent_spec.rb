@@ -48,4 +48,48 @@ describe Agent do
 
     end
   end
+
+  describe "#on_call!" do
+    let(:agent) { FactoryGirl.create(:agent) }
+
+    it 'marks the agent as being on call' do
+      expect(agent.on_call).to be_nil
+      expect(Agent.on_call).to have(0).records
+      agent.on_call!
+      expect(Agent.on_call).to have(1).record
+      expect(agent.on_call).to be_true
+    end
+  end
+
+  describe "#off_call!" do
+    let(:agent) { FactoryGirl.create(:on_call_agent) }
+
+    it 'marks the agent as being off call' do
+      expect(agent.on_call).to be_true
+      expect(Agent.on_call).to have(1).records
+      agent.off_call!
+      expect(Agent.on_call).to have(0).record
+      expect(agent.on_call).to be_false
+    end
+  end
+
+  describe "#on_call?" do
+    let(:agent)         { FactoryGirl.create(:agent) }
+    let(:on_call_agent) { FactoryGirl.create(:on_call_agent) }
+
+    it "should be true for agents on call" do
+      expect(agent.on_call?).to be_false
+      expect(on_call_agent.on_call?).to be_true
+    end
+  end
+
+  describe "#off_call?" do
+    let(:agent)         { FactoryGirl.create(:agent) }
+    let(:on_call_agent) { FactoryGirl.create(:on_call_agent) }
+
+    it "should be true for agents not on call" do
+      expect(agent.off_call?).to be_true
+      expect(on_call_agent.off_call?).to be_false
+    end
+  end
 end

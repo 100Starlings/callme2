@@ -8,9 +8,20 @@ class Agent < ActiveRecord::Base
   has_many :devices
 
   # Scopes
-  scope :on_call, -> { where(on_call: true) }
+  scope :on_call,  -> { where(on_call: true) }
   scope :off_call, -> { where("agents.on_call IS NULL OR agents.on_call = ?", false) }
 
   accepts_nested_attributes_for :devices, allow_destroy: true
 
+  def on_call!
+    update_attribute :on_call, true
+  end
+
+  def off_call!
+    update_attribute :on_call, false
+  end
+
+  def off_call?
+    !on_call?
+  end
 end
