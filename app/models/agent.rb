@@ -11,4 +11,6 @@ class Agent < ActiveRecord::Base
   scope :on_call, -> { where(on_call: true) }
   scope :not_on_call, -> { where("agents.on_call IS NULL OR agents.on_call = ?", false) }
 
+  accepts_nested_attributes_for :devices, allow_destroy: true
+
 end
