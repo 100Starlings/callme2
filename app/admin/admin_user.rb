@@ -1,4 +1,4 @@
-ActiveAdmin.register AdminUser do
+ActiveAdmin.register AdminUser, :as => "Admin" do
   config.comments = false
 
   index do
