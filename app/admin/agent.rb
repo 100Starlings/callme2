@@ -25,7 +25,15 @@ ActiveAdmin.register Agent do
     column :devices do |agent|
       ul do
         agent.devices.each do |device|
-          li device.to_s
+          li do
+            if device.active?
+              strong device.to_s
+            else
+              span class: "inactive" do
+                device.to_s
+              end
+            end
+          end
         end
       end
     end
@@ -39,10 +47,18 @@ ActiveAdmin.register Agent do
   show do |agent|
     attributes_table do
       row :name
-      row :on_call
+      row :on_call do
+        agent.on_call ? "YES" : "NO"
+      end
       agent.devices.each do |device|
         row device.name do
-          device.address
+          if device.active?
+            strong device.address
+          else
+            span class: "inactive" do
+              device.address
+            end
+          end
         end
       end
 
@@ -52,7 +68,12 @@ ActiveAdmin.register Agent do
 
   controller do
     def permitted_params
-      params.permit(agent: [:name, :on_call, { devices_attributes: [:name, :address, :id, :_destroy]}])
+      params.permit(agent:
+                    [:name,
+                     :on_call,
+                     { devices_attributes: 
+                       [:name, :address, :id, :active, :_destroy] }
+                    ])
     end
   end
 
@@ -73,6 +94,7 @@ ActiveAdmin.register Agent do
     f.has_many :devices do |device|
       device.input :name
       device.input :address
+      device.input :active
       device.input :_destroy, as: :boolean, label: "Remove"
     end
 
