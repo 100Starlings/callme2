@@ -7,6 +7,9 @@ class Device < ActiveRecord::Base
   # Associations
   belongs_to :agent
 
+  # Scopes
+  scope :active, -> { where(active: true) }
+
   def to_s
     "#{name}: #{address}"
   end
