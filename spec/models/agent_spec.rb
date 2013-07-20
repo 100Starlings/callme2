@@ -25,8 +25,8 @@ describe Agent do
     end
   end
 
-  describe ".not_on_call" do
-    subject { Agent.not_on_call }
+  describe ".off_call" do
+    subject { Agent.off_call }
     context "when there are no agents defined" do
       it { should be_empty }
     end
