@@ -22,6 +22,7 @@ end
 group :development, :test do
   gem 'rspec-rails', '~> 2.0'
   gem 'factory_girl_rails'
+  gem 'debugger'
 end
 
 # Use ActiveModel has_secure_password
@@ -32,6 +33,3 @@ end
 
 # Use Capistrano for deployment
 # gem 'capistrano', group: :development
-
-# Use debugger
-# gem 'debugger', group: [:development, :test]
