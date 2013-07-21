@@ -1,6 +1,27 @@
 require 'spec_helper'
 
 describe Agent do
+
+  describe "validations" do
+    context "being created" do
+      it "requires a name" do
+        expect(Agent.new).to be_invalid
+        expect(Agent.new(name: "John")).to be_valid
+      end
+    end
+
+    context "when trying to go on call" do
+      let(:agent) { FactoryGirl.create(:agent) }
+
+      it "requires at least one active device" do
+        agent.on_call = true
+        expect(agent.valid?).to be_false
+
+        agent.devices.create(name: "phone", address: "555-12345", active: true)
+        expect(agent.valid?).to be_true
+      end
+    end
+  end
   describe ".on_call" do
     subject { Agent.on_call }
     context "when there are no agents defined" do
@@ -50,7 +71,8 @@ describe Agent do
   end
 
   describe "#on_call!" do
-    let(:agent) { FactoryGirl.create(:agent) }
+    let(:device) { FactoryGirl.create(:active_device) }
+    let(:agent) { FactoryGirl.create(:agent, devices: [device]) }
 
     it 'marks the agent as being on call' do
       expect(agent.on_call).to be_nil

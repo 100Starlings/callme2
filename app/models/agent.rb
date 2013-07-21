@@ -11,14 +11,22 @@ class Agent < ActiveRecord::Base
   scope :on_call,  -> { where(on_call: true) }
   scope :off_call, -> { where("agents.on_call IS NULL OR agents.on_call = ?", false) }
 
+  # Validations
+  validates :name, presence: true
+  validate if: :on_call? do
+    if devices.active.none?
+      errors.add(:base, "Agents need at least one active device to be on call")
+    end
+  end
+
   accepts_nested_attributes_for :devices, allow_destroy: true
 
   def on_call!
-    update_attribute :on_call, true
+    update_attributes on_call: true
   end
 
   def off_call!
-    update_attribute :on_call, false
+    update_attributes on_call: false
   end
 
   def off_call?
