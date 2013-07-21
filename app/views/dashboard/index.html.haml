@@ -1,0 +1,16 @@
+%p
+  Hello Collect+,
+
+- if @agents.size > 0
+  %p
+    currently #{@agents.size} agent#{ @agents.size > 1 ? "s are" : " is" } on call:
+  %ul.unstyled
+    - @agents.each do |agent|
+      %li
+        %i.icon-user
+        =agent.name
+- else
+  %p
+    currently no agent is on call.
+  %p
+    Support requests will be routed to the voicemail.
