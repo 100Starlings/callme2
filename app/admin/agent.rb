@@ -80,8 +80,11 @@ ActiveAdmin.register Agent do
   member_action :on_call, :method => :put do
     Agent.all.each(&:off_call!)
     agent = Agent.find(params[:id])
-    agent.on_call!
-    redirect_to admin_agents_path, { notice: "Agent #{agent.name} is now on call!" }
+    if agent.on_call!
+      redirect_to admin_agents_path, { notice: "Agent #{agent.name} is now on call!" }
+    else
+      redirect_to admin_agents_path, { alert: agent.errors.full_messages }
+    end
   end
 
   form do |f|
