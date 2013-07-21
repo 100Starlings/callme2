@@ -2,14 +2,14 @@ ActiveAdmin.register Agent do
 
   config.filters = false
 
-  batch_action :go_on_call do |selection|
+  batch_action :on_call do |selection|
     Agent.find(selection).each do |agent|
       agent.on_call!
     end
     redirect_to :back
   end
 
-  batch_action :go_off_call do |selection|
+  batch_action :off_call do |selection|
     Agent.find(selection).each do |agent|
       agent.off_call!
     end
