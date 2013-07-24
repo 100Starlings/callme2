@@ -11,6 +11,8 @@ gem 'turbolinks'
 
 gem 'haml'
 
+gem 'sinatra'
+
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
 gem 'jbuilder', '~> 1.2'
 
