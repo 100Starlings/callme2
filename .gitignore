@@ -16,3 +16,6 @@
 
 # Ignore config files
 config/database.yml
+
+# Ignore foreman environment
+/.env
