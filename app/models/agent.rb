@@ -15,7 +15,7 @@ class Agent < ActiveRecord::Base
   validates :name, presence: true
   validate if: :on_call? do
     if devices.active.none?
-      errors.add(:base, "Agents need at least one active device to be on call")
+      errors.add(:on_call, "Agents need at least one active device to be on call")
     end
   end
 
