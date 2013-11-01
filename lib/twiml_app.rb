@@ -7,7 +7,6 @@ class TwimlApp < Sinatra::Base
     username == ENV['CALLME_USER'] && password == ENV['CALLME_PASS']
   end
 
-
   get '/' do
     logger.info "New call"
     if Agent.on_call.empty?
@@ -21,8 +20,8 @@ class TwimlApp < Sinatra::Base
     logger.info "Calling #{params[:agents]} agents"
     redirect "/callme/voicemail" unless ["active", "sleepers"].include?(params[:agents])
     agents = agents_to_dial(params[:agents])
-    number_strings = numbers_to_dial(agents)do |number|
-      "<Number url=\"http://#{ENV['CALLME_USER']}:#{ENV['CALLME_PASS']}@callmecplus.herokuapp.com/callme/screen\">#{number}</Number>"
+    number_strings = numbers_to_dial(agents).map do |number|
+      "<Number url=\"http://#{ENV['CALLME_USER']}:#{ENV['CALLME_PASS']}@#{request.host}/callme/screen\">#{number}</Number>"
     end
 
     response =<<EOF
@@ -39,7 +38,7 @@ EOF
     logger.info "Screening call"
     reponse =<<EOF
   <Response>
-    <Gather action="http://#{ENV['CALLME_USER']}:#{ENV['CALLME_PASS']}@callmecplus.herokuapp.com/callme/complete_call">
+    <Gather action="http://#{ENV['CALLME_USER']}:#{ENV['CALLME_PASS']}@#{request.host}/callme/complete_call">
       <Say voice='woman'>Press any key to accept this call</Say>
     </Gather>
     <Hangup/>
