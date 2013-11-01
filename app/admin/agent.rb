@@ -78,8 +78,13 @@ ActiveAdmin.register Agent do
   end
 
   member_action :on_call, :method => :put do
-    Agent.all.each(&:off_call!)
     agent = Agent.find(params[:id])
+    redirect_to(
+      admin_agents_path,
+      { alert: "Agents need at least one active deice to be on call" }
+    ) and return unless agent.ready?
+
+    Agent.all.each(&:off_call!)
     if agent.on_call!
       redirect_to admin_agents_path, { notice: "Agent #{agent.name} is now on call!" }
     else

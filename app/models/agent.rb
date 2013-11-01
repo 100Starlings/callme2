@@ -14,7 +14,7 @@ class Agent < ActiveRecord::Base
   # Validations
   validates :name, presence: true
   validate if: :on_call? do
-    if devices.active.none?
+    unless ready?
       errors.add(:on_call, "Agents need at least one active device to be on call")
     end
   end
@@ -27,6 +27,10 @@ class Agent < ActiveRecord::Base
 
   def off_call!
     update_attributes on_call: false
+  end
+
+  def ready?
+    devices.active.any?
   end
 
   def off_call?
