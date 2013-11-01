@@ -19,9 +19,9 @@ gem 'jbuilder', '~> 1.2'
 # Admin
 gem 'responders',          github: 'plataformatec/responders'
 gem 'inherited_resources', github: 'josevalim/inherited_resources'
-gem 'ransack',             github: 'ernie/ransack', branch: 'rails-4'
-gem 'activeadmin',         github: 'gregbell/active_admin', branch: 'rails4'
-gem 'formtastic',          github: 'justinfrench/formtastic'
+gem 'ransack'
+gem 'activeadmin',         github: 'gregbell/active_admin'
+gem 'formtastic'
 
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
