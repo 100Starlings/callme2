@@ -38,7 +38,7 @@ ActiveAdmin.register Agent do
       end
     end
     actions defaults: false do |agent|
-      if agent.off_call?
+      if agent.off_call? && agent.ready?
         link_to "Go On Call", [:on_call_admin, agent], method: :put
       end
     end
