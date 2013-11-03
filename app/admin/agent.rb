@@ -47,6 +47,7 @@ ActiveAdmin.register Agent do
   show do |agent|
     attributes_table do
       row :name
+      row :email
       row :on_call do
         agent.on_call ? "YES" : "NO"
       end
@@ -70,6 +71,7 @@ ActiveAdmin.register Agent do
     def permitted_params
       params.permit(agent:
                     [:name,
+                     :email,
                      :on_call,
                      { devices_attributes: 
                        [:name, :address, :id, :active, :_destroy] }
@@ -95,6 +97,7 @@ ActiveAdmin.register Agent do
   form do |f|
     f.inputs "Details" do
       f.input :name
+      f.input :email
     end
     f.inputs "Status" do
       f.input :on_call

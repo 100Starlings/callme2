@@ -13,6 +13,7 @@ class Agent < ActiveRecord::Base
 
   # Validations
   validates :name, presence: true
+  #validates :email, presence: true, format: /.+@.+\..+/i
   validate if: :on_call? do
     unless ready?
       errors.add(:on_call, "Agents need at least one active device to be on call")

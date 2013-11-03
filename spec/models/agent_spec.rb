@@ -5,8 +5,17 @@ describe Agent do
   describe "validations" do
     context "being created" do
       it "requires a name" do
-        expect(Agent.new).to be_invalid
-        expect(Agent.new(name: "John")).to be_valid
+        expect(Factory.build(:agent)).to be_valid
+        expect(Factory.build(:agent, name: nil)).to be_valid
+      end
+
+      it "requires an email" do
+        expect(Factory.build(:agent, email: nil)).to be_invalid
+      end
+
+      it "requires the email to be in a valid format" do
+        expect(Factory.build(:agent, email: "test")).to be_invalid
+        expect(Factory.build(:agent, email: "test@xxx")).to be_invalid
       end
     end
 

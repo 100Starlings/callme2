@@ -3,8 +3,13 @@ FactoryGirl.define do
     "John #{n}"
   end
 
+  sequence :email do |n|
+    "john_#{n}@example.com"
+  end
+
   factory :agent do
     name
+    email
   end
 
   factory :on_call_agent, parent: :agent do
