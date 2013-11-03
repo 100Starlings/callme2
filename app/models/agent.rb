@@ -23,11 +23,15 @@ class Agent < ActiveRecord::Base
   accepts_nested_attributes_for :devices, allow_destroy: true
 
   def on_call!
-    update_attributes on_call: true
+    if update_attributes on_call: true
+      AgentMailer.on_call(self).deliver
+    end
   end
 
   def off_call!
-    update_attributes on_call: false
+    if update_attributes on_call: false
+      AgentMailer.off_call(self).deliver
+    end
   end
 
   def ready?
