@@ -1,4 +1,5 @@
 require 'sinatra/base'
+require 'builder'
 
 class TwimlApp < Sinatra::Base
   enable :logging
@@ -20,65 +21,62 @@ class TwimlApp < Sinatra::Base
     logger.info "Calling #{params[:agents]} agents"
     redirect "/callme/voicemail" unless ["active", "sleepers"].include?(params[:agents])
     agents = agents_to_dial(params[:agents])
-    number_strings = numbers_to_dial(agents).map do |number|
-      "<Number url=\"http://#{ENV['CALLME_USER']}:#{ENV['CALLME_PASS']}@#{request.host}/callme/screen\">#{number}</Number>"
-    end
 
-    response =<<EOF
-  <Response>
-    <Say voice='woman'>Hello, please wait while we connect you to #{agents.map(&:name).join(' and ')}. </Say>
-    <Dial action="#{next_call(params[:agents])}" method="GET">
-      #{number_strings.join("\n")}
-    </Dial>
-  </Response>
-EOF
+    builder do |xml|
+      xml.response do
+        xml.say "Hello, please wait while we connect you to #{agents.map(&:name).join(' and ')}. ", voice: "woman" 
+        xml.dial action: next_call(params[:agents]), method: "GET" do
+          numbers_to_dial(agents).each do |number|
+            xml.number number, url: "http://#{ENV['CALLME_USER']}:#{ENV['CALLME_PASS']}@#{request.host}/callme/screen"
+          end
+        end
+      end
+    end
   end
 
   post '/screen' do
     logger.info "Screening call"
-    reponse =<<EOF
-  <Response>
-    <Gather action="http://#{ENV['CALLME_USER']}:#{ENV['CALLME_PASS']}@#{request.host}/callme/complete_call">
-      <Say voice='woman'>Press any key to accept this call</Say>
-    </Gather>
-    <Hangup/>
-  </Response>
-EOF
+    builder do |xml|
+      xml.response do
+        xml.gather action: "http://#{ENV['CALLME_USER']}:#{ENV['CALLME_PASS']}@#{request.host}/callme/complete_call" do
+          xml.say "Press any key to accept this call", voice: "woman"
+        end
+        xml.hangup
+      end
+    end
   end
 
   post '/complete_call' do
     logger.info "Completing call"
-    response =<<EOF
-  <Response>
-    <Say voice='woman'>Connecting</Say>
-  </Response>
-EOF
+    builder do |xml|
+      xml.response do
+        xml.say "Connecting", voice: "woman"
+      end
+    end
   end
 
   get '/voicemail' do
     logger.info "Activating Voicemail"
-    response =<<EOF
-  <Response>
-    <Say voice='woman'>
-      Welcome. Sorry our support team is not available at the moment.
-      Please leave a message including your phone number or email address
-      after the beep.
-    </Say>  
-    <Record action="/callme/recording" />
-  </Response>
-EOF
+    message = "Welcome. I am sorry, our support team is not available at the moment.
+      Please leave a message including your phone number or email address after the beep."
+    builder do |xml|
+      xml.response do
+        xml.say message, voice: "woman"
+        xml.record action: "/callme/recording"
+      end
+    end
   end
 
   post '/recording' do
     recording_url = params['RecordingUrl']
     logger.info "Recording call at #{recording_url}"
     # email the recording url to the support team via sendhub.net ;)
-    response =<<EOF
-  <Response>
-    <Say>Thank you for contacting us.  We'll be in touch shortly.  Goodbye.</Say>
-    <Hangup/>
-  </Response>
-EOF
+    builder do |xml|
+      xml.response do
+        xml.say "Thank you for contacting us.  We'll be in touch shortly.  Goodbye."
+        xml.hangup
+      end
+    end
   end
 
   private
