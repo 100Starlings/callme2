@@ -11,15 +11,15 @@ class TwimlApp < Sinatra::Base
   get '/' do
     logger.info "New call"
     if Agent.on_call.empty?
-      redirect "/callme/voicemail"
+      redirect to("/voicemail")
     else
-      redirect "/callme/call/active"
+      redirect to("/call/active")
     end
   end
 
   get '/call/:agents' do
     logger.info "Calling #{params[:agents]} agents"
-    redirect "/callme/voicemail" unless ["active", "sleepers"].include?(params[:agents])
+    redirect to("/voicemail") unless ["active", "sleepers"].include?(params[:agents])
     agents = agents_to_dial(params[:agents])
 
     builder do |xml|
