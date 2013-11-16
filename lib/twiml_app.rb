@@ -58,11 +58,12 @@ class TwimlApp < Sinatra::Base
   get '/voicemail' do
     logger.info "Activating Voicemail"
     message = "Welcome. I am sorry, our support team is not available at the moment.
-      Please leave a message including your phone number or email address after the beep."
+      Please leave a message including your phone number or email address after the beep.
+      Press star when finished"
     builder do |xml|
       xml.response do
         xml.say message, voice: "woman"
-        xml.record action: "/callme/recording"
+        xml.record action: "/callme/recording", timeout: 10, maxLength: "300"
       end
     end
   end
