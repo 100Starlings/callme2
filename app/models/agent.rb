@@ -30,7 +30,7 @@ class Agent < ActiveRecord::Base
 
   def off_call!
     if update_attributes on_call: false
-      AgentMailer.off_call(self).deliver
+      AgentMailer.off_call(self).deliver if was_on_call?
     end
   end
 

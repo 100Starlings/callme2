@@ -121,6 +121,13 @@ describe Agent do
       end
     end
 
+    context "when the agent is already off call" do
+      let(:agent) { FactoryGirl.create(:agent) }
+      it "does not send an off_call notification to the agent" do
+        AgentMailer.should_not_receive(:off_call)
+        agent.off_call!
+      end
+    end
   end
 
   describe "#on_call?" do
