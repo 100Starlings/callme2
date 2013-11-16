@@ -23,13 +23,4 @@ FactoryGirl.define do
     end
   end
 
-  factory :device do
-    name "phone"
-    address "555 123456"
-  end
-
-  factory :active_device, parent: :device do
-    active true
-  end
-
 end

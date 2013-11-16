@@ -4,6 +4,10 @@
 # A Device has a name and an address.
 #
 class Device < ActiveRecord::Base
+  # Validations
+  validates :name, presence: true
+  validates :address, presence: true
+
   # Associations
   belongs_to :agent
 
