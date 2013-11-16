@@ -35,6 +35,7 @@ group :development, :test do
   gem 'debugger'
 end
 
+gem 'dotenv-rails', :groups => [:development, :test]
 # Use ActiveModel has_secure_password
 # gem 'bcrypt-ruby', '~> 3.0.0'
 
