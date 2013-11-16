@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131103231526) do
+ActiveRecord::Schema.define(version: 20131104000302) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,6 +55,19 @@ ActiveRecord::Schema.define(version: 20131103231526) do
     t.datetime "created_at"
     t.datetime "updated_at"
     t.string   "email"
+  end
+
+  create_table "calls", force: true do |t|
+    t.string   "sid"
+    t.string   "from"
+    t.string   "to"
+    t.string   "status"
+    t.string   "direction"
+    t.integer  "duration"
+    t.string   "recording_url"
+    t.string   "recording_duration"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "devices", force: true do |t|

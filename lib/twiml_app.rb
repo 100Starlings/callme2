@@ -80,6 +80,11 @@ class TwimlApp < Sinatra::Base
     end
   end
 
+  post '/callback' do
+    # save stats for the call
+    Call.create(status_callback_params)
+  end
+
   private
 
   def next_call(agents)
@@ -98,6 +103,19 @@ class TwimlApp < Sinatra::Base
     when 'sleepers'
       Agent.off_call
     end
+  end
+
+  def status_callback_params
+    {
+      sid:                params["CallSid"],
+      from:               params["From"],
+      to:                 params["To"],
+      status:             params["CallStatus"],
+      direction:          params["Direction"],
+      duration:           params["CallDuration"],
+      recording_url:      params["RecordingUrl"],
+      recording_duration: params["RecordingDuration"]
+    }
   end
 
   def numbers_to_dial(agents)
