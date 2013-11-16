@@ -4,18 +4,22 @@ describe Agent do
 
   describe "validations" do
     context "being created" do
+      context "from the Factory" do
+        it "should be valid" do
+          expect(FactoryGirl.build(:agent)).to be_valid
+        end
+      end
       it "requires a name" do
-        expect(Factory.build(:agent)).to be_valid
-        expect(Factory.build(:agent, name: nil)).to be_valid
+        expect(FactoryGirl.build(:agent, name: nil)).to be_invalid
       end
 
       it "requires an email" do
-        expect(Factory.build(:agent, email: nil)).to be_invalid
+        expect(FactoryGirl.build(:agent, email: nil)).to be_invalid
       end
 
       it "requires the email to be in a valid format" do
-        expect(Factory.build(:agent, email: "test")).to be_invalid
-        expect(Factory.build(:agent, email: "test@xxx")).to be_invalid
+        expect(FactoryGirl.build(:agent, email: "test")).to be_invalid
+        expect(FactoryGirl.build(:agent, email: "test@xxx")).to be_invalid
       end
     end
 
@@ -82,6 +86,7 @@ describe Agent do
   describe "#on_call!" do
     let(:device) { FactoryGirl.create(:active_device) }
     let(:agent) { FactoryGirl.create(:agent, devices: [device]) }
+    let(:mail)  { double(Mail, deliver: true) }
 
     it 'marks the agent as being on call' do
       expect(agent.on_call).to be_nil
@@ -90,10 +95,16 @@ describe Agent do
       expect(Agent.on_call).to have(1).record
       expect(agent.on_call).to be_true
     end
+
+    it "sends a notification to the agent" do
+      AgentMailer.should_receive(:on_call).with(agent).and_return(mail)
+      agent.on_call!
+    end
   end
 
   describe "#off_call!" do
     let(:agent) { FactoryGirl.create(:on_call_agent) }
+    let(:mail)  { double(Mail, deliver: true) }
 
     it 'marks the agent as being off call' do
       expect(agent.on_call).to be_true
@@ -102,6 +113,14 @@ describe Agent do
       expect(Agent.on_call).to have(0).record
       expect(agent.on_call).to be_false
     end
+
+    context "when the agent is on call" do
+      it "sends a notification to the agent" do
+        AgentMailer.should_receive(:off_call).with(agent).and_return(mail)
+        agent.off_call!
+      end
+    end
+
   end
 
   describe "#on_call?" do

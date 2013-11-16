@@ -13,7 +13,7 @@ class Agent < ActiveRecord::Base
 
   # Validations
   validates :name, presence: true
-  #validates :email, presence: true, format: /.+@.+\..+/i
+  validates :email, presence: true, format: /.+@.+\..+/i
   validate if: :on_call? do
     unless ready?
       errors.add(:on_call, "Agents need at least one active device to be on call")
@@ -40,5 +40,16 @@ class Agent < ActiveRecord::Base
 
   def off_call?
     !on_call?
+  end
+
+  private
+
+  def was_on_call?
+    # FIXME: ideally we wanted a simpler method here that just needs testing
+    # the previous changes once. however, I haven't been able to set the default
+    # :on_call to false on create, so we need to consider also the case of 
+    # on_call being nil.
+    previous_changes.keys.include?("on_call") &&
+      previous_changes["on_call"].first != nil 
   end
 end
