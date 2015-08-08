@@ -23,15 +23,11 @@ class Agent < ActiveRecord::Base
   accepts_nested_attributes_for :devices, allow_destroy: true
 
   def on_call!
-    if update_attributes on_call: true
-      AgentMailer.on_call(self).deliver
-    end
+    on_call_state(true) unless on_call?
   end
 
   def off_call!
-    if update_attributes on_call: false
-      AgentMailer.off_call(self).deliver if was_on_call?
-    end
+    on_call_state(false) unless off_call?
   end
 
   def ready?
@@ -44,12 +40,12 @@ class Agent < ActiveRecord::Base
 
   private
 
-  def was_on_call?
-    # FIXME: ideally we wanted a simpler method here that just needs testing
-    # the previous changes once. however, I haven't been able to set the default
-    # :on_call to false on create, so we need to consider also the case of 
-    # on_call being nil.
-    previous_changes.keys.include?("on_call") &&
-      previous_changes["on_call"].first != nil 
+  def on_call_state(state)
+    send_reminder if update_attribute("on_call", state)
+  end
+
+  def send_reminder
+    reminder = on_call? ? "on_call" : "off_call"
+    AgentMailer.send(reminder, self).deliver
   end
 end
