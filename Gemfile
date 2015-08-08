@@ -1,49 +1,42 @@
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
-gem 'rails', '4.0.1'
-gem 'pg'
+gem "rails", ">= 4.2.0"
+gem "pg"
 
-gem 'sass-rails', '~> 4.0.0'
-gem 'uglifier', '>= 1.3.0'
-gem 'coffee-rails', '~> 4.0.0'
-gem 'jquery-rails'
-gem 'turbolinks'
+gem "sass-rails", "= 4.0.3"
+gem "uglifier", ">= 1.3.0"
+gem "coffee-rails"
+gem "jquery-rails"
+gem "turbolinks"
 
-gem 'haml'
+gem "haml"
 
-gem 'sinatra'
-gem 'builder'
+gem "sinatra"
+gem "builder"
 
 gem "rack-timeout"
-gem 'unicorn'
+gem "unicorn"
+
+gem "devise"
 
 # Build JSON APIs with ease. Read more: https://github.com/rails/jbuilder
-gem 'jbuilder', '~> 1.2'
+gem "jbuilder", "~> 1.2"
 
 # Admin
-gem 'responders',          github: 'plataformatec/responders'
-gem 'inherited_resources', github: 'josevalim/inherited_resources'
-gem 'ransack'
-gem 'activeadmin',         github: 'gregbell/active_admin'
-gem 'formtastic'
+gem "responders"
+gem "ransack"
+gem "activeadmin", github: 'activeadmin'
+gem "formtastic"
 
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
-  gem 'sdoc', require: false
+  gem "sdoc", require: false
 end
 
 group :development, :test do
-  gem 'rspec-rails', '~> 2.0'
-  gem 'factory_girl_rails'
-  gem 'debugger'
+  gem "rspec-rails", "~> 2.0"
+  gem "factory_girl_rails"
+  gem "pry"
 end
 
-gem 'dotenv-rails', :groups => [:development, :test]
-# Use ActiveModel has_secure_password
-# gem 'bcrypt-ruby', '~> 3.0.0'
-
-# Use unicorn as the app server
-# gem 'unicorn'
-
-# Use Capistrano for deployment
-# gem 'capistrano', group: :development
+gem "dotenv-rails", groups: [:development, :test]
