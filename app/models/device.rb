@@ -1,5 +1,5 @@
 # Device
-# represents a point of contact for an Agent. It will typically be a 
+# represents a point of contact for an Agent. It will typically be a
 # phone number.
 # A Device has a name and an address.
 #

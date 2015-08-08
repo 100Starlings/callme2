@@ -24,7 +24,7 @@ class TwimlApp < Sinatra::Base
 
     builder do |xml|
       xml.response do
-        xml.say "Hello, please wait while we connect you to #{agents.map(&:name).join(' and ')}. ", voice: "woman" 
+        xml.say "Hello, please wait while we connect you to #{agents.map(&:name).join(' and ')}. ", voice: "woman"
         xml.dial action: next_call(params[:agents]), method: "GET" do
           numbers_to_dial(agents).each do |number|
             xml.number number, url: "http://#{ENV['CALLME_USER']}:#{ENV['CALLME_PASS']}@#{request.host}/callme/screen"
