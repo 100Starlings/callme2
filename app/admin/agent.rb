@@ -13,7 +13,9 @@ ActiveAdmin.register Agent do
     attributes_table do
       row :name
       row :email
+      row :pagerduty_id
       row :on_call_level
+      row :contact_number
     end
     active_admin_comments
   end
