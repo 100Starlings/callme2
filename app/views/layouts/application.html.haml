@@ -6,8 +6,6 @@
     %meta{:name=>"viewport", :content=>"width=device-width, initial-scale=1.0"}
     = csrf_meta_tags
     = stylesheet_link_tag    "application", media: "all", "data-turbolinks-track" => true
-    -#%link{:href=>"/stylesheets/bootstrap.min.css", :rel=>"stylesheet", :media=>"screen"}
-    -#%link{:href=>"/stylesheets/bootstrap-responsive.min.css", :rel=>"stylesheet", :media=>"screen"}
     :css
       body {
         padding-top: 20px;
@@ -32,8 +30,4 @@
       .row-fluid
         .span-12
           = yield
-    %script{:src=>"http://code.jquery.com/jquery.js"}
     = javascript_include_tag "application", "data-turbolinks-track" => true
-    -#%script{:src=>"javascripts/bootstrap.min.js"}
-
-
