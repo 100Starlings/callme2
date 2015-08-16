@@ -3,25 +3,21 @@ ActiveAdmin.register Agent do
   config.filters = false
 
   batch_action :on_call do |selection|
-    Agent.find(selection).each do |agent|
-      agent.on_call!
-    end
+    Agent.find(selection).each(&:on_call!)
     redirect_to :back
   end
 
   batch_action :off_call do |selection|
-    Agent.find(selection).each do |agent|
-      agent.off_call!
-    end
+    Agent.find(selection).each(&:off_call!)
     redirect_to :back
   end
 
   index do
     selectable_column
-    column :name, :sortable => :name do |agent|
+    column :name, sortable: :name do |agent|
       link_to agent.name, [:admin, agent]
     end
-    column :on_call, :sortable => :on_call
+    column :on_call, sortable: :on_call
     column :devices do |agent|
       ul do
         agent.devices.each do |device|
@@ -62,7 +58,6 @@ ActiveAdmin.register Agent do
           end
         end
       end
-
     end
     active_admin_comments
   end
@@ -73,24 +68,26 @@ ActiveAdmin.register Agent do
                     [:name,
                      :email,
                      :on_call,
-                     { devices_attributes: 
-                       [:name, :address, :id, :active, :_destroy] }
+                     { devices_attributes:
+                       [:name, :address, :id, :active, :_destroy] },
                     ])
     end
   end
 
-  member_action :on_call, :method => :put do
+  member_action :on_call, method: :put do
     agent = Agent.find(params[:id])
     redirect_to(
       admin_agents_path,
-      { alert: "Agents need at least one active deice to be on call" }
+      alert: "Agents need at least one active deice to be on call",
     ) and return unless agent.ready?
 
     Agent.all.each(&:off_call!)
     if agent.on_call!
-      redirect_to admin_agents_path, { notice: "Agent #{agent.name} is now on call!" }
+      redirect_to admin_agents_path,
+        notice: "Agent #{agent.name} is now on call!"
     else
-      redirect_to admin_agents_path, { alert: agent.errors.full_messages }
+      redirect_to admin_agents_path,
+        alert: agent.errors.full_messages
     end
   end
 
@@ -111,5 +108,4 @@ ActiveAdmin.register Agent do
 
     f.actions
   end
-
 end
