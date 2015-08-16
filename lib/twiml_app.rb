@@ -10,26 +10,26 @@ class TwimlApp < Sinatra::Base
 
   get "/" do
     logger.info "New call"
-    if Agent.on_call.empty?
+    if agent_levels.empty?
       redirect to("/voicemail")
     else
-      redirect to("/call/active")
+      redirect to("/call/#{agent_levels.first}")
     end
   end
 
-  get "/call/:agents" do
-    type = params[:agents]
-    logger.info "Calling #{type} agents"
-    redirect to("/voicemail") unless %w(active sleepers).include?(type)
-    agents = agents_to_dial(type)
+  get "/call/:level" do
+    level = params[:level]
+    logger.info "Calling level #{level} agents"
+    redirect to("/voicemail") unless agent_levels.include?(level)
+    agents = agents_to_dial(level)
 
     builder do |xml|
       xml.response do
         names = agents.map(&:name).join(" and ")
         xml.say "Hello, please wait while we connect you to #{names}",
           voice: "woman"
-        xml.dial action: next_call(type), method: "GET" do
-          numbers_to_dial(agents).each do |number|
+        xml.dial action: next_call(level), method: "GET" do
+          agents.pluck(:contact_number).each do |number|
             xml.number number, url: callme_screen_url
           end
         end
@@ -91,22 +91,17 @@ class TwimlApp < Sinatra::Base
 
   private
 
-  def next_call(agents)
-    case agents
-    when "active"
-      "/callme/call/sleepers"
-    when "sleepers"
-      "/callme/voicemail"
-    end
+  def agent_levels
+    Agent.on_call.pluck(:on_call_level)
   end
 
-  def agents_to_dial(agents)
-    case agents
-    when "active"
-      Agent.on_call
-    when "sleepers"
-      Agent.off_call
-    end
+  def next_call(level)
+    next_level = agent_levels.sort.find { |l| l > level }
+    "/callme/call/#{next_level}"
+  end
+
+  def agents_to_dial(level)
+    Agent.on_call.where(on_call_level: level)
   end
 
   def callme_screen_url
