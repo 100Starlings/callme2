@@ -1,7 +1,7 @@
 require "pager_duty"
 namespace :pagerduty do
-  desc "show who's on call"
-  task :on_call, [:level] => :environment do |_t, args|
+  desc "show which number to call for level (default 1)"
+  task :callnumber, [:level] => :environment do |_t, args|
     args.with_defaults(level: 1)
     on_call_policies = PagerDuty::EscalationPolicy.on_call
     escalation_policy = on_call_policies.find do |ep|
@@ -25,6 +25,37 @@ namespace :pagerduty do
       puts "+#{phone["country_code"]} #{phone["phone_number"]}"
     else
       puts "No phone contact"
+    end
+  end
+
+  desc "update agents and contact data from PagerDuty"
+  task refresh: :environment do
+    on_call_policies = PagerDuty::EscalationPolicy.on_call
+    escalation_policy = on_call_policies.find do |ep|
+      ep["id"] == ENV["PAGERDUTY_ESCALATION_POLICY"]
+    end
+
+    on_call_users = escalation_policy["on_call"]
+    puts "On call users: #{on_call_users.map { |oc| oc["user"]["name"] }}"
+    on_call_users.each do |oc|
+      user = oc["user"]
+      id = user["id"]
+      agent = Agent.find_or_initialize_by(pagerduty_id: id)
+
+      agent.name = user["name"]
+      agent.on_call_level = oc["level"].to_i
+      agent.email = user["email"]
+
+      contact_methods = PagerDuty::ContactMethod.list(id, "contact_methods")
+      phone = contact_methods.find { |c| c["type"] == "phone" }
+      if phone
+        agent.contact_number = "+#{phone["country_code"]} #{phone["phone_number"]}"
+      end
+
+      unless agent.save
+        puts "Agent with errors: #{agent.inspect}"
+        puts "  errors: #{agent.errors.full_messages}"
+      end
     end
   end
 end
