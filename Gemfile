@@ -25,8 +25,11 @@ gem "jbuilder", "~> 1.2"
 # Admin
 gem "responders"
 gem "ransack"
-gem "activeadmin", github: 'activeadmin'
+gem "activeadmin", github: "activeadmin"
 gem "formtastic"
+
+# API calls
+gem "httparty"
 
 group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
