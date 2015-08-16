@@ -34,7 +34,6 @@ module PagerDuty
 
     def make_request(method, req, opts)
       opts = opts.merge(@options)
-      puts "#{method.upcase} #{url_for(req)} #{opts.inspect}"
       self.class.send(method, url_for(req), opts)
     end
 
