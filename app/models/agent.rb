@@ -8,8 +8,8 @@ class Agent < ActiveRecord::Base
   has_many :devices
 
   # Scopes
-  scope :on_call,  -> { where(on_call: true) }
-  scope :off_call, -> { where("agents.on_call IS NULL OR agents.on_call = ?", false) }
+  scope :on_call,  -> { where.not(contact_number: nil) }
+  scope :off_call, -> { where(contact_number: nil) }
 
   # Validations
   validates :name, presence: true
