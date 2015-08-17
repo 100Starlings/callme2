@@ -95,9 +95,14 @@ class TwimlApp < Sinatra::Base
     Agent.on_call.pluck(:on_call_level)
   end
 
-  def next_call(level)
-    next_level = agent_levels.sort.find { |l| l > level }
-    "/callme/call/#{next_level}"
+  def next_call(current_level)
+    next_level = agent_levels.sort.find { |lvl| lvl > current_level }
+
+    if next_level
+      "/callme/call/#{next_level}"
+    else
+      "/voicemail"
+    end
   end
 
   def agents_to_dial(level)
