@@ -36,7 +36,7 @@ namespace :pagerduty do
     end
 
     on_call_users = escalation_policy["on_call"]
-    Agent.update_all call_level: nil
+    Agent.update_all on_call_level: nil
     puts "On call users: #{on_call_users.map { |oc| oc["user"]["name"] }}"
     on_call_users.each do |oc|
       user = oc["user"]
