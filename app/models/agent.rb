@@ -8,7 +8,7 @@ class Agent < ActiveRecord::Base
   has_many :devices
 
   # Scopes
-  scope :on_call,  -> { where.not(contact_number: nil) }
+  scope :on_call,  -> { where.not(contact_number: nil, on_call_level: nil) }
   scope :off_call, -> { where(contact_number: nil) }
 
   # Validations
