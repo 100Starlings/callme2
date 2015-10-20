@@ -24,7 +24,7 @@ class TwimlApp < Sinatra::Base
     agents = agents_to_dial(level)
 
     builder do |xml|
-      xml.instruct! :xml, :version => '1.0'
+      xml.instruct! :xml, version: "1.0"
       xml.Response do
         names = agents.map(&:name).join(" and ")
         xml.Say "Hello, please wait while we connect you to #{names}",
@@ -41,7 +41,7 @@ class TwimlApp < Sinatra::Base
   post "/screen" do
     logger.info "Screening call"
     builder do |xml|
-      xml.instruct! :xml, :version => '1.0'
+      xml.instruct! :xml, version: "1.0"
       xml.Response do
         xml.Gather action: callme_complete_url do
           xml.Say "Press any key to accept this call", voice: "woman"
@@ -54,7 +54,7 @@ class TwimlApp < Sinatra::Base
   post "/complete_call" do
     logger.info "Completing call"
     builder do |xml|
-      xml.instruct! :xml, :version => '1.0'
+      xml.instruct! :xml, version: "1.0"
       xml.Response do
         xml.Say "Connecting", voice: "woman"
       end
@@ -68,7 +68,7 @@ class TwimlApp < Sinatra::Base
       Please leave a message including your phone number or email address
       after the beep. Press star when finished"
     builder do |xml|
-      xml.instruct! :xml, :version => '1.0'
+      xml.instruct! :xml, version: "1.0"
       xml.Response do
         xml.Say message, voice: "woman"
         xml.Record action: "/callme/recording", timeout: 10, maxLength: "300"
@@ -80,10 +80,11 @@ class TwimlApp < Sinatra::Base
     recording_url = params["RecordingUrl"]
     logger.info "Recording call at #{recording_url}"
     # email the recording url to the support team via sendhub.net ;)
+    message = "Thank you for contacting us. We'll be in touch shortly. Goodbye"
     builder do |xml|
-      xml.instruct! :xml, :version => '1.0'
+      xml.instruct! :xml, version: "1.0"
       xml.Response do
-        xml.Say "Thank you for contacting us. We'll be in touch shortly. Goodbye"
+        xml.Say message
         xml.Hangup
       end
     end
