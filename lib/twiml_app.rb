@@ -39,6 +39,7 @@ class TwimlApp < Sinatra::Base
   end
 
   get "/call/:level/next" do
+    level = params[:level]
     next_level = agent_levels.sort.find { |lvl| lvl > level }
     status = params["DialCallStatus"]
 
