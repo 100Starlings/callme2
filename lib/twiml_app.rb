@@ -29,12 +29,31 @@ class TwimlApp < Sinatra::Base
         names = agents.map(&:name).join(" and ")
         xml.Say "Hello, please wait while we connect you to #{names}",
           voice: "woman"
-        xml.Dial action: next_call(level), method: "GET" do
+        xml.Dial action: next_call_url(level), method: "GET" do
           agents.pluck(:contact_number).each do |number|
             xml.Number number, dial_options
           end
         end
       end
+    end
+  end
+
+  get "/call/:level/next" do
+    next_level = agent_levels.sort.find { |lvl| lvl > current_level }
+    status = params["DialCallStatus"]
+
+    if status == "completed"
+      logger.info "Call completed, hanging up."
+      builder do |xml|
+        xml.instruct! :xml, version: "1.0"
+        xml.Response do
+          xml.Hangup
+        end
+      end
+    elsif next_level
+      redirect to("/call/#{next_level}")
+    else
+      redirect to("/voicemail")
     end
   end
 
@@ -101,18 +120,12 @@ class TwimlApp < Sinatra::Base
     Agent.on_call.pluck(:on_call_level)
   end
 
-  def next_call(current_level)
-    next_level = agent_levels.sort.find { |lvl| lvl > current_level }
-
-    if next_level
-      "/callme/call/#{next_level}"
-    else
-      "/callme/voicemail"
-    end
-  end
-
   def agents_to_dial(level)
     Agent.on_call.where(on_call_level: level)
+  end
+
+  def next_call_url(current_level)
+    "#{base_url}/callme/call/#{current_level}/next"
   end
 
   def callme_screen_url
