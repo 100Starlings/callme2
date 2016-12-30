@@ -31,7 +31,7 @@ class TwimlApp < Sinatra::Base
           voice: "woman"
         xml.Dial action: next_call(level), method: "GET" do
           agents.pluck(:contact_number).each do |number|
-            xml.Number number, url: callme_screen_url
+            xml.Number number, dial_options
           end
         end
       end
@@ -107,7 +107,7 @@ class TwimlApp < Sinatra::Base
     if next_level
       "/callme/call/#{next_level}"
     else
-      "/voicemail"
+      "/callme/voicemail"
     end
   end
 
@@ -142,5 +142,17 @@ class TwimlApp < Sinatra::Base
 
   def numbers_to_dial(agents)
     Device.active.where(agent: agents).pluck(:address)
+  end
+
+  def screen_calls?
+    screen_calls = ENV["CALLME_SCREEN_CALLS"]
+    !["no", "off", 0].include? screen_calls
+  end
+
+  def dial_options
+    options = {}
+    options[:url] = callme_screen_url if screen_calls?
+
+    options
   end
 end
