@@ -30,27 +30,27 @@ namespace :pagerduty do
 
   desc "update agents and contact data from PagerDuty"
   task refresh: :environment do
-    on_call_policies = PagerDuty::EscalationPolicy.on_call
-    escalation_policy = on_call_policies.find do |ep|
-      ep["id"] == ENV["PAGERDUTY_ESCALATION_POLICY"]
+    on_calls = PagerDuty::OnCalls.list(nil, nil, "?include[]=users&include[]=contact_methods")
+    puts "ON CALLS:\n#{on_calls}"
+    active_on_calls = on_calls.select do |oc|
+      oc["escalation_policy"]["id"] == ENV["PAGERDUTY_ESCALATION_POLICY"]
     end
 
-    on_call_users = escalation_policy["on_call"]
+    puts "On call users: #{active_on_calls.map { |oc| oc["user"]["summary"] }}"
     Agent.update_all on_call_level: nil
-    puts "On call users: #{on_call_users.map { |oc| oc["user"]["name"] }}"
-    on_call_users.each do |oc|
+    active_on_calls.each do |oc|
       user = oc["user"]
       id = user["id"]
       agent = Agent.find_or_initialize_by(pagerduty_id: id)
 
       agent.name = user["name"]
-      agent.on_call_level = oc["level"].to_i
+      agent.on_call_level = oc["escalation_level"].to_i
       agent.email = user["email"]
 
-      contact_methods = PagerDuty::ContactMethod.list(id, "contact_methods")
-      phone = contact_methods.find { |c| c["type"] == "phone" }
+      contact_methods = user["contact_methods"]
+      phone = contact_methods.find { |c| c["type"] == "phone_contact_method" }
       if phone
-        agent.contact_number = "+#{phone["country_code"]} #{phone["phone_number"]}"
+        agent.contact_number = "+#{phone["country_code"]} #{phone["address"]}"
       end
 
       unless agent.save
