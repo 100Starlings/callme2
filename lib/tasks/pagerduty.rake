@@ -8,16 +8,21 @@ namespace :pagerduty do
       ep["escalation_policy"]["id"] == ENV["PAGERDUTY_ESCALATION_POLICY"]
     end
 
-    puts "On call users: #{active_on_calls.map { |oc| oc["user"]["name"] }}"
-    level_user = active_on_calls.find { |oc| oc["escalation_level"].to_i == args.level.to_i }
+    puts "On call users: #{active_on_calls.map { |oc| oc["user"]["name"] }}\n\n"
+    level_user = active_on_calls.find do |oc|
+      oc["escalation_level"].to_i == args.level.to_i &&
+        oc["user"]["contact_methods"]
+          .map { |cm| cm["type"] }
+          .include?("phone_contact_method")
+    end
 
     fail "No user on call level #{args.level}" unless level_user
 
     user = level_user["user"]
     user_id = user["id"]
-    puts "Found user on level #{args.level} call: #{user.inspect}"
+    puts "Found user on level #{args.level} call: #{user.inspect}\n\n"
 
-    contact_methods = user["contact_methhods"]
+    contact_methods = user["contact_methods"]
     phone = contact_methods.find { |cm| cm["type"] == "phone_contact_method" }
 
     if phone
