@@ -1,13 +1,5 @@
 module PagerDuty
-  class EscalationPolicy < Resource
-    class OnCall < PagerDuty::Collection
-      self.path = "escalation_policies/on_call"
-    end
-
-    self.path = "escalation_policies"
-
-    def self.on_call
-      OnCall.list
-    end
+  class OnCalls < PagerDuty::Collection
+    self.path = "oncalls"
   end
 end
