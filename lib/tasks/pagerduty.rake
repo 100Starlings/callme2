@@ -3,26 +3,25 @@ namespace :pagerduty do
   desc "show which number to call for level (default 1)"
   task :callnumber, [:level] => :environment do |_t, args|
     args.with_defaults(level: 1)
-    on_call_policies = PagerDuty::EscalationPolicy.on_call
-    escalation_policy = on_call_policies.find do |ep|
-      ep["id"] == ENV["PAGERDUTY_ESCALATION_POLICY"]
+    on_calls = PagerDuty::OnCalls.list(nil, nil, "?include[]=users&include[]=contact_methods")
+    active_on_calls = on_calls.select do |ep|
+      ep["escalation_policy"]["id"] == ENV["PAGERDUTY_ESCALATION_POLICY"]
     end
 
-    on_call_users = escalation_policy["on_call"]
-    puts "On call users: #{on_call_users.map { |oc| oc["user"]["name"] }}"
-    level_user = on_call_users.find { |oc| oc["level"].to_i == args.level.to_i }
+    puts "On call users: #{active_on_calls.map { |oc| oc["user"]["name"] }}"
+    level_user = active_on_calls.find { |oc| oc["escalation_level"].to_i == args.level.to_i }
 
-    fail "No user on call level #{level}" unless level_user
+    fail "No user on call level #{args.level}" unless level_user
 
     user = level_user["user"]
     user_id = user["id"]
-    puts "Found user on level 1 call: #{user.inspect}"
+    puts "Found user on level #{args.level} call: #{user.inspect}"
 
-    contact_methods = PagerDuty::ContactMethod.list(user_id, "contact_methods")
-    phone = contact_methods.find { |cm| cm["type"] == "phone" }
+    contact_methods = user["contact_methhods"]
+    phone = contact_methods.find { |cm| cm["type"] == "phone_contact_method" }
 
     if phone
-      puts "+#{phone["country_code"]} #{phone["phone_number"]}"
+      puts "+#{phone["country_code"]} #{phone["address"]}"
     else
       puts "No phone contact"
     end
@@ -31,7 +30,6 @@ namespace :pagerduty do
   desc "update agents and contact data from PagerDuty"
   task refresh: :environment do
     on_calls = PagerDuty::OnCalls.list(nil, nil, "?include[]=users&include[]=contact_methods")
-    puts "ON CALLS:\n#{on_calls}"
     active_on_calls = on_calls.select do |oc|
       oc["escalation_policy"]["id"] == ENV["PAGERDUTY_ESCALATION_POLICY"]
     end
