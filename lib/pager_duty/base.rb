@@ -6,8 +6,8 @@ module PagerDuty
 
     attr_reader :data
 
-    def self.path_for(id, action = nil)
-      "#{@path}/#{id}/#{action}".gsub("//", "/")
+    def self.path_for(id, action = nil, options="")
+      "#{@path}/#{id}/#{action}".gsub("//", "/") + options
     end
 
     def self.path=(p)

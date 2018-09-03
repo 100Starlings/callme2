@@ -16,6 +16,7 @@ module PagerDuty
         headers: {
           "Authorization" => "Token token=#{token}",
           "Content-type"  => "application/json",
+          "Accept"        => "application/vnd.pagerduty+json;version=2"
         },
       }
 
@@ -38,7 +39,8 @@ module PagerDuty
     end
 
     def url_for(req)
-      "https://#{@domain}.pagerduty.com/api/v1/#{req}"
+      # "https://#{@domain}.pagerduty.com/api/v1/#{req}"
+      "https://api.pagerduty.com/#{req}"
     end
   end
 end
