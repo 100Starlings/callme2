@@ -122,7 +122,7 @@ class TwimlApp < Sinatra::Base
   end
 
   def agents_to_dial(level)
-    Agent.on_call.where(on_call_level: level)
+    Agent.on_call.where(on_call_level: level).where.not(contact_number: nil)
   end
 
   def next_call_url(current_level)
