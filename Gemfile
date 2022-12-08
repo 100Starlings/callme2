@@ -1,12 +1,12 @@
 source "https://rubygems.org"
 
-ruby "2.3.3"
+ruby "2.7.4"
 
-gem "rails", ">= 4.2.0"
+gem "rails"
 gem "pg"
 
-gem "sass-rails", "= 4.0.3"
-gem "uglifier", ">= 1.3.0"
+gem "sass-rails"
+gem "uglifier"
 gem "coffee-rails"
 gem "jquery-rails"
 gem "turbolinks"
@@ -27,7 +27,7 @@ gem "jbuilder", "~> 1.2"
 # Admin
 gem "responders"
 gem "ransack"
-gem "activeadmin", github: "activeadmin"
+gem "activeadmin"
 gem "formtastic"
 
 # API calls
