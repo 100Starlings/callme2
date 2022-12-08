@@ -3,8 +3,3 @@
 This is a simple call screening application.
 It provides a rails application to manage a set of Agents, and exposes a TwiML
 document via Sinatra to drive the conversation between the caller and the agent.
-
-...
-
-
-
