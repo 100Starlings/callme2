@@ -40,7 +40,7 @@ class TwimlApp < Sinatra::Base
 
   get "/call/:level/next" do
     level = params[:level]
-    next_level = agent_levels.sort.find { |lvl| lvl > level }
+    next_level = agent_levels.find { |lvl| lvl > level }
     status = params["DialCallStatus"]
 
     if status == "completed"
@@ -118,7 +118,7 @@ class TwimlApp < Sinatra::Base
   private
 
   def agent_levels
-    Agent.on_call.pluck(:on_call_level)
+    Agent.on_call.pluck(:on_call_level).compact.uniq.sort
   end
 
   def agents_to_dial(level)
